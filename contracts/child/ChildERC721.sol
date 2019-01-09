@@ -15,13 +15,7 @@ contract ChildERC721 is ChildToken, ERC721Full {
   );
 
   // constructor
-  constructor (address _token, string name, string symbol) ERC721Full(name, symbol)
-    public 
-    {
-    require(_token != address(0));
-
-    token = _token;
-  }
+  constructor (string name, string symbol) ERC721Full(name, symbol) public {}
 
   /**
    * Deposit tokens

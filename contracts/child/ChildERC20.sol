@@ -18,11 +18,9 @@ contract ChildERC20 is ChildToken, ERC20, ERC20Detailed {
     uint256 output2
   );
   // constructor
-  constructor (address _token, string _name, string _symbol, uint8 _decimals)
+  constructor (string _name, string _symbol, uint8 _decimals)
     public
     ERC20Detailed(_name, _symbol, _decimals) {
-    require(_token != address(0));
-    token = _token;
   }
 
   /**

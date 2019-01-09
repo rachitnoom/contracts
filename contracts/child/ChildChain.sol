@@ -58,9 +58,10 @@ contract ChildChain is Ownable {
 
   function addToken(
     address _rootToken,
+    address _childToken,
     string _name,
     string _symbol,
-    uint8 _decimals,
+    uint8 _decimals, // only applicable to ERC20
     bool _isERC721
   ) public onlyOwner returns (address token) {
     // check if root token already exists
@@ -68,11 +69,12 @@ contract ChildChain is Ownable {
 
     // create new token contract
     if (_isERC721) {
-      token = new ChildERC721(_rootToken, _name, _symbol);
+      token = ChildERC721(_childToken);
       isERC721[_rootToken] = true;
     } else {
-      token = new ChildERC20(_rootToken, _name, _symbol, _decimals);
+      token = ChildERC20(_childToken);
     }
+    ChildToken(token).setToken(_rootToken);
 
     // add mapping with root token
     tokens[_rootToken] = token;

@@ -33,4 +33,9 @@ contract ChildToken is Ownable {
 
   function withdraw(uint256 amountOrTokenId) public;
 
+  function setToken(address _token) public {
+    require(_token != address(0) && token == address(0x0));
+    token = _token;
+  }
+
 }
