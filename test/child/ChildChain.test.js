@@ -16,6 +16,7 @@ chai
 contract('ChildChain', async function(accounts) {
   let childChainContract
   let rootToken
+  let childToken
   let logDecoder = new LogDecoder([ChildChain._json.abi, ChildERC20._json.abi])
 
   beforeEach(async function() {
@@ -26,6 +27,7 @@ contract('ChildChain', async function(accounts) {
     childChainContract = await ChildChain.new()
     // create new root token
     rootToken = await RootToken.new('Test Token', 'TEST')
+    childToken = await ChildERC20.new('Test', 'TEST', 18)
   })
 
   it('should initialize properly ', async function() {
@@ -35,9 +37,7 @@ contract('ChildChain', async function(accounts) {
   it('should allow only owner to add new token ', async function() {
     await childChainContract.addToken(
       rootToken.address,
-      'Token S',
-      'STX',
-      18,
+      childToken.address,
       false,
       {
         from: accounts[1]
@@ -52,33 +52,26 @@ contract('ChildChain', async function(accounts) {
   it('should allow owner to add new token ', async function() {
     const receipt = await childChainContract.addToken(
       rootToken.address,
-      'Token One',
-      'OTX',
-      18,
+      childToken.address,
       false
     )
     const logs = logDecoder.decodeLogs(receipt.receipt.logs)
-    logs.should.have.lengthOf(2)
+    logs.should.have.lengthOf(1)
 
-    logs[0].event.should.equal('OwnershipTransferred')
-    logs[0].args.previousOwner.toLowerCase().should.equal(ZeroAddress)
-    logs[0].args.newOwner.toLowerCase().should.equal(childChainContract.address)
-
-    logs[1].event.should.equal('NewToken')
-    logs[1].args.rootToken.toLowerCase().should.equal(rootToken.address)
+    logs[0].event.should.equal('NewToken')
+    logs[0].args.rootToken.toLowerCase().should.equal(rootToken.address)
+    logs[0].args.token.toLowerCase().should.equal(childToken.address)
 
     // child chain contract
     await childChainContract
       .tokens(rootToken.address)
-      .should.eventually.equal(logs[1].args.token.toLowerCase())
-
+      .should.eventually.equal(logs[0].args.token.toLowerCase())
     // get child chain token
-    const childToken = ChildERC20.at(logs[1].args.token)
 
     // should have proper owner
-    await childToken
-      .owner()
-      .should.eventually.equal(childChainContract.address.toLowerCase())
+    // await childToken
+    //   .owner()
+    //   .should.eventually.equal(childChainContract.address.toLowerCase())
 
     // should match mapping
     await childChainContract
@@ -90,18 +83,13 @@ contract('ChildChain', async function(accounts) {
     // add token
     await childChainContract.addToken(
       rootToken.address,
-      'Token One',
-      'OTX',
-      18,
+      childToken.address,
       false
     )
-
     // add again
     await childChainContract.addToken(
       rootToken.address,
-      'a',
-      'b',
-      18,
+      childToken.address,
       false
     ).should.be.rejected
   })

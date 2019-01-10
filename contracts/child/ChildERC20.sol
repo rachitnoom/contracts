@@ -67,7 +67,7 @@ contract ChildERC20 is ChildToken, ERC20, ERC20Detailed {
   /// @param to Address of token receiver.
   /// @param value Number of tokens to transfer.
   /// @return Returns success of function call.
-  function transfer( address to, uint256 value) public returns (bool) {
+  function transfer(address to, uint256 value) public returns (bool) {
     uint256 input1 = balanceOf(msg.sender);
     uint256 input2 = balanceOf(to);
 

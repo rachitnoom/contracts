@@ -32,8 +32,7 @@ contract ChildChain is Ownable {
   //
   event NewToken(
     address indexed rootToken,
-    address indexed token,
-    uint8 _decimals
+    address indexed token
   );
 
   event TokenDeposited(
@@ -59,14 +58,11 @@ contract ChildChain is Ownable {
   function addToken(
     address _rootToken,
     address _childToken,
-    string _name,
-    string _symbol,
-    uint8 _decimals, // only applicable to ERC20
     bool _isERC721
-  ) public onlyOwner returns (address token) {
+  ) public onlyOwner {
     // check if root token already exists
     require(tokens[_rootToken] == address(0x0));
-
+    ChildToken token;
     // create new token contract
     if (_isERC721) {
       token = ChildERC721(_childToken);
@@ -74,13 +70,13 @@ contract ChildChain is Ownable {
     } else {
       token = ChildERC20(_childToken);
     }
-    ChildToken(token).setToken(_rootToken);
+    token.setToken(_rootToken);
 
     // add mapping with root token
-    tokens[_rootToken] = token;
+    tokens[_rootToken] = _childToken;
 
     // broadcast new token's event
-    emit NewToken(_rootToken, token, _decimals);
+    emit NewToken(_rootToken, token);
   }
  
   function depositTokens(
