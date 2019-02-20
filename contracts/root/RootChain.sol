@@ -305,18 +305,15 @@ contract RootChain is Ownable, IRootChain {
     address _token,
     address _user,
     uint256 _amount
-  ) public onlyWithdrawManager returns(bool)  { 
+  ) public onlyWithdrawManager returns(bool)  {
 
     address wethToken = depositManager.wethToken();
 
     // transfer to user TODO: use pull for transfer
     if (depositManager.isERC721(_token)) {
-      ERC721(_token).transferFrom(address(this), _user, _amount);
-    } else if (_token == wethToken) {
-      WETH t = WETH(_token); 
-      t.withdraw(_amount, _user);
+      ERC721(_token).approve(_user, _amount);
     } else {
-      require(ERC20(_token).transfer(_user, _amount));
+      require(ERC20(_token).approve(_user, _amount));
     }
     return true;
   }
