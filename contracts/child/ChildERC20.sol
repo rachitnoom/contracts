@@ -5,6 +5,7 @@ import { ERC20Detailed } from "openzeppelin-solidity/contracts/token/ERC20/ERC20
 
 import "./ChildToken.sol";
 import "./IParentToken.sol";
+import "../token/ContractReceiver.sol";
 
 
 contract ChildERC20 is ChildToken, ERC20, ERC20Detailed {
@@ -85,6 +86,11 @@ contract ChildERC20 is ChildToken, ERC20, ERC20Detailed {
 
     // actual transfer
     bool result = super.transfer(to, value);
+
+    // call token fallback if receiver is contract
+    if (result && isContract(to)) {
+      ContractReceiver(to).tokenFallback(msg.sender, value, "0x0");
+    }
 
     // log balance
     emit LogTransfer(

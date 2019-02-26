@@ -42,4 +42,13 @@ contract ChildToken is Ownable {
 
   function setParent(address parent) public isParentOwner;
 
+  function isContract(address _addr) internal view returns (bool) {
+    uint length;
+    assembly {
+      //retrieve the size of the code on target address, this needs assembly
+      length := extcodesize(_addr)
+    }
+    return (length > 0);
+  }
+
 }
