@@ -154,7 +154,7 @@ contract ExitManager is RootChainable {
     PriorityQueue exitQueue = PriorityQueue(exitsQueues[_token]);
 
     // Iterate while the queue is not empty.
-    while (exitQueue.currentSize() > 0) {
+    while (exitQueue.currentSize() > 0 && gasleft() > uint256(200000) ) {
       (exitableAt, utxoPos) = getNextExit(_token);
 
       // Check if this exit has finished its challenge period.

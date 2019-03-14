@@ -36,8 +36,7 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
 
   // current header block number
   uint256 private _currentHeaderBlock;
-
-
+  uint256[] public gasCost = [155000, 100000, 52000]; // Transfer [ERC721, WETH/ETH, ERC20]
   // stake interface
   StakeManager public stakeManager;
   
@@ -244,6 +243,11 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
     return depositManager.depositBlock(_depositCount);
   }
 
+  function setGasFor(uint8 index, uint256 _gas) public onlyOwner {
+    require(index < gasCost.length && _gas > 0);
+    gasCost[index] = _gas;
+  }
+
   // set stake manager
   function setStakeManager(address _stakeManager) public onlyOwner {
     require(_stakeManager != address(0));
@@ -313,67 +317,70 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
     address _token,
     address _user,
     uint256 _amount
-  ) public onlyWithdrawManager returns(bool)  { 
+  ) public onlyWithdrawManager returns(bool)  {
 
     address wethToken = depositManager.wethToken();
+    uint256 _gas;
 
     // transfer to user TODO: use pull for transfer
     if (depositManager.isERC721(_token)) {
       // ERC721(_token).transferFrom(address(this), _user, _amount);
-           assembly {
-            let ptr := mload(0x40)
+      _gas = gasCost[0];
+      assembly {
+        let ptr := mload(0x40)
 
-            // keccak256('transferFrom(address,address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
-            mstore(ptr, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
-            mstore(add(ptr,4), address)
-            // calldatacopy(t, f, s) copy s bytes from calldata at position f to mem at position t
-            // copy from, to, value from calldata to memory
+        // keccak256('transferFrom(address,address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
+        mstore(ptr, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
+        mstore(add(ptr,4), address)
+        // calldatacopy(t, f, s) copy s bytes from calldata at position f to mem at position t
+        // copy from, to, value from calldata to memory
 
-            calldatacopy(add(ptr, 36), 36, 64)
+        calldatacopy(add(ptr, 36), 36, 64)
 
-            // call ERC20 Token contract transferFrom function
-            let result := call(gas, _token, 0, ptr, 100, ptr, 32)
+        // call ERC20 Token contract transferFrom function
+        let result := call(_gas, _token, 0, ptr, 100, ptr, 32)
 
-            // if eq(result, 1) {
-                // return true;
-            // }
+        // if eq(result, 1) {
+            // return true;
+        // }
         }
     } else if (_token == wethToken) {
       // WETH t = WETH(_token);
-        assembly {
-             let ptr := mload(0x40)
+      _gas = gasCost[2];
+      assembly {
+          let ptr := mload(0x40)
 
-             // keccak256('transferFrom(address,address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
-             mstore(ptr, 0x2e1a7d4d00000000000000000000000000000000000000000000000000000000)
-             // calldatacopy(t, f, s) copy s bytes from calldata at position f to mem at position t
-             // copy from, to, value from calldata to memory
-             calldatacopy(add(ptr, 4), 36, 64)
+          // keccak256('withdraw(address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
+          mstore(ptr, 0x2e1a7d4d00000000000000000000000000000000000000000000000000000000)
+          // copy from, to, value from calldata to memory
+          calldatacopy(add(ptr, 4), 36, 64)
 
-             // call ERC20 Token contract transferFrom function
-             let result := call(gas, _token, 0, ptr, 68, ptr, 32)
+          // call ERC20 Token contract transferFrom function
+          let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
 
-            //  if eq(result, 1) {
-            //      return(0, 0)
-            //  }
-         }
+        //  if eq(result, 1) {
+        //      return(0, 0)
+        //  }
+        }
       // t.withdraw(_amount, _user);
     } else {
-        assembly {
-            let ptr := mload(0x40)
+      _gas = gasCost[1];
+      assembly {
+        let ptr := mload(0x40)
 
-            // keccak256('transfer(address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
-            mstore(ptr, 0xa9059cbb00000000000000000000000000000000000000000000000000000000)
-            // calldatacopy(t, f, s) copy s bytes from calldata at position f to mem at position t
-            // copy from, to, value from calldata to memory
-            calldatacopy(add(ptr, 4), 36, 64)
+        // keccak256('transfer(address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
+        mstore(ptr, 0xa9059cbb00000000000000000000000000000000000000000000000000000000)
+        // calldatacopy(t, f, s) copy s bytes from calldata at position f to mem at position t
+        // copy from, to, value from calldata to memory
+        calldatacopy(add(ptr, 4), 36, 64)
 
-            // call ERC20 Token contract transferFrom function
-            let result := call(gas, _token, 0, ptr, 68, ptr, 32)
+        // call ERC20 Token contract transferFrom function
+        let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
 
-            // if eq(result, 1) {
-            //     return(0, 0)
-            // }
-        }
+        // if eq(result, 1) {
+        //     return(0, 0)
+        // }
+      }
     }
     return true;
   }
