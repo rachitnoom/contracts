@@ -348,15 +348,15 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
       // WETH t = WETH(_token);
       _gas = gasCost[2];
       assembly {
-          let ptr := mload(0x40)
+        let ptr := mload(0x40)
 
-          // keccak256('withdraw(address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
-          mstore(ptr, 0x2e1a7d4d00000000000000000000000000000000000000000000000000000000)
-          // copy from, to, value from calldata to memory
-          calldatacopy(add(ptr, 4), 36, 64)
+        // keccak256('withdraw(address,uint256)') & 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
+        mstore(ptr, 0x2e1a7d4d00000000000000000000000000000000000000000000000000000000)
+        // copy from, to, value from calldata to memory
+        calldatacopy(add(ptr, 4), 36, 64)
 
-          // call ERC20 Token contract transferFrom function
-          let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
+        // call ERC20 Token contract transferFrom function
+        let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
 
         //  if eq(result, 1) {
         //      return(0, 0)
