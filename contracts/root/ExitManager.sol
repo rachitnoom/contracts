@@ -49,6 +49,7 @@ contract ExitManager is RootChainable {
 
   // WETH address
   address public wethToken;
+  uint256 public exitGas = 200000;
 
   //
   // Events
@@ -70,6 +71,10 @@ contract ExitManager is RootChainable {
   //
   // Public functions
   //
+  function setExitGas(uint256 _gas) public onlyOwner {
+    require(_gas > 0);
+    exitGas = _gas;
+  }
 
   /**
   * @dev Returns information about an exit.
@@ -154,7 +159,7 @@ contract ExitManager is RootChainable {
     PriorityQueue exitQueue = PriorityQueue(exitsQueues[_token]);
 
     // Iterate while the queue is not empty.
-    while (exitQueue.currentSize() > 0 && gasleft() > uint256(200000) ) {
+    while (exitQueue.currentSize() > 0 && gasleft() > exitGas ) {
       (exitableAt, utxoPos) = getNextExit(_token);
 
       // Check if this exit has finished its challenge period.
