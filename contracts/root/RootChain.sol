@@ -36,7 +36,6 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
 
   // current header block number
   uint256 private _currentHeaderBlock;
-  uint256[] public gasCost = [155000, 100000, 52000]; // Transfer [ERC721, WETH/ETH, ERC20]
   // stake interface
   StakeManager public stakeManager;
   
@@ -243,11 +242,6 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
     return depositManager.depositBlock(_depositCount);
   }
 
-  function setGasFor(uint8 index, uint256 _gas) public onlyOwner {
-    require(index < gasCost.length && _gas > 0);
-    gasCost[index] = _gas;
-  }
-
   // set stake manager
   function setStakeManager(address _stakeManager) public onlyOwner {
     require(_stakeManager != address(0));
@@ -320,12 +314,11 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
   ) public onlyWithdrawManager returns(bool)  {
 
     address wethToken = depositManager.wethToken();
-    uint256 _gas;
+    // uint256 _gas; [155000, 100000, 52000];
 
     // transfer to user TODO: use pull for transfer
     if (depositManager.isERC721(_token)) {
       // ERC721(_token).transferFrom(address(this), _user, _amount);
-      _gas = gasCost[0];
       assembly {
         let ptr := mload(0x40)
 
@@ -338,7 +331,7 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
         calldatacopy(add(ptr, 36), 36, 64)
 
         // call ERC20 Token contract transferFrom function
-        let result := call(_gas, _token, 0, ptr, 100, ptr, 32)
+        let result := call(155000, _token, 0, ptr, 100, ptr, 32)
 
         // if eq(result, 1) {
             // return true;
@@ -346,7 +339,6 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
         }
     } else if (_token == wethToken) {
       // WETH t = WETH(_token);
-      _gas = gasCost[2];
       assembly {
         let ptr := mload(0x40)
 
@@ -356,7 +348,7 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
         calldatacopy(add(ptr, 4), 36, 64)
 
         // call ERC20 Token contract transferFrom function
-        let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
+        let result := call(52000, _token, 0, ptr, 68, ptr, 32)
 
         //  if eq(result, 1) {
         //      return(0, 0)
@@ -364,7 +356,6 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
         }
       // t.withdraw(_amount, _user);
     } else {
-      _gas = gasCost[1];
       assembly {
         let ptr := mload(0x40)
 
@@ -375,7 +366,7 @@ contract RootChain is Ownable, IRootChain, IERC721Receiver {
         calldatacopy(add(ptr, 4), 36, 64)
 
         // call ERC20 Token contract transferFrom function
-        let result := call(_gas, _token, 0, ptr, 68, ptr, 32)
+        let result := call(100000, _token, 0, ptr, 68, ptr, 32)
 
         // if eq(result, 1) {
         //     return(0, 0)
