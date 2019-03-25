@@ -12,9 +12,10 @@ import { RootChainable } from "../mixin/RootChainable.sol";
 
 import { IRootChain } from "./IRootChain.sol";
 import { DepositManager } from "./DepositManager.sol";
+import "./Storage.sol";
 
 
-contract ExitManager is RootChainable {
+contract ExitManager is Storage, RootChainable {
   using Merkle for bytes32;
   using RLP for bytes;
   using RLP for RLP.RLPItem;
@@ -26,28 +27,28 @@ contract ExitManager is RootChainable {
 
   DepositManager public depositManager;
 
-  // structure for plasma exit
-  struct PlasmaExit {
-    address owner;
-    address token;
-    uint256 amountOrTokenId;
-    bool burnt;
-  }
+  // // structure for plasma exit
+  // struct PlasmaExit {
+  //   address owner;
+  //   address token;
+  //   uint256 amountOrTokenId;
+  //   bool burnt;
+  // }
 
-  // all plasma exits
-  mapping (uint256 => PlasmaExit) public exits;
+  // // all plasma exits
+  // mapping (uint256 => PlasmaExit) public exits;
 
-  // mapping with token => (owner => exitId) keccak(token+owner) keccak(token+owner+tokenId)
-  mapping (bytes32 => uint256) public ownerExits;
+  // // mapping with token => (owner => exitId) keccak(token+owner) keccak(token+owner+tokenId)
+  // mapping (bytes32 => uint256) public ownerExits;
 
 
-  // exit queue for each token
-  mapping (address => address) public exitsQueues;
+  // // exit queue for each token
+  // mapping (address => address) public exitsQueues;
 
-  // exit NFT contract
+  // // exit NFT contract
   address public exitNFTContract;
 
-  // WETH address
+  // // WETH address
   address public wethToken;
 
   //

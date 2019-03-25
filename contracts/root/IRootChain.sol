@@ -5,13 +5,13 @@ import { IManager } from "./IManager.sol";
 
 contract IRootChain is IManager {
   // header block
-  struct HeaderBlock {
-    bytes32 root;
-    uint256 start;
-    uint256 end;
-    uint256 createdAt;
-    address proposer;
-  }
+  // struct HeaderBlock {
+  //   bytes32 root;
+  //   uint256 start;
+  //   uint256 end;
+  //   uint256 createdAt;
+  //   address proposer;
+  // }
 
   // retrieve current header block
   function currentHeaderBlock() public view returns (uint256);

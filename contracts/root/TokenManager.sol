@@ -1,18 +1,18 @@
 pragma solidity ^0.4.24;
+import "./Storage.sol";
 
-
-contract TokenManager {
+contract TokenManager is Storage {
   // mapping for (root token => child token)
-  mapping(address => address) public tokens;
+//   mapping(address => address) public tokens;
 
-  // mapping for (child token => root token)
-  mapping(address => address) public reverseTokens;
+//   // mapping for (child token => root token)
+//   mapping(address => address) public reverseTokens;
 
-  // mapping whether a token is erc721 or not
-  mapping(address => bool) public isERC721;
+//   // mapping whether a token is erc721 or not
+//   mapping(address => bool) public isERC721;
 
-  // weth token
-  address public wethToken;
+//   // weth token
+//   address public wethToken;
 
   //
   // Events

@@ -18,27 +18,28 @@ import { WithdrawManager } from "./WithdrawManager.sol";
 import { DepositManager } from "./DepositManager.sol";
 import { IRootChain } from "./IRootChain.sol";
 import { StakeManager } from "./StakeManager.sol";
+import "./Storage.sol";
 
 
-contract RootChain is Ownable, IRootChain, IERC721Receiver {
+contract RootChain is Storage, Ownable, IRootChain, IERC721Receiver {
   using SafeMath for uint256;
   using RLP for bytes;
   using RLP for RLP.RLPItem;
   using RLP for RLP.Iterator;
 
-  mapping(address => bool) public proofValidatorContracts;
+  // mapping(address => bool) public proofValidatorContracts;
 
-  // child chain contract
-  address public childChainContract;
+  // // child chain contract
+  // address public childChainContract;
 
-  // list of header blocks (address => header block object)
-  mapping(uint256 => HeaderBlock) public headerBlocks;
+  // // list of header blocks (address => header block object)
+  // mapping(uint256 => HeaderBlock) public headerBlocks;
 
-  // current header block number
-  uint256 private _currentHeaderBlock;
+  // // current header block number
+  // uint256 private _currentHeaderBlock;
 
 
-  // stake interface
+  // // stake interface
   StakeManager public stakeManager;
   
   // withdraw manager
