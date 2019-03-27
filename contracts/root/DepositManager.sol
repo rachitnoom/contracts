@@ -60,12 +60,13 @@ contract DepositManager is Storage, IManager, TokenManager, RootChainable {
   // map child token to root token
   function mapToken(address _rootToken, address _childToken, bool _isERC721) public onlyRootChain {
     _mapToken(_rootToken, _childToken, _isERC721);
+    exitsQueues[_rootToken] = address(new PriorityQueue());
   }
 
   // finalize commit when new header block commited
-  function finalizeCommit(uint256 _currentHeaderBlock) public onlyRootChain {
-    depositCount = 1;
-  }
+  // function finalizeCommit(uint256 _currentHeaderBlock) public onlyRootChain {
+  //   depositCount = 1;
+  // }
 
   // Get next deposit block
   function nextDepositBlock(uint256 currentHeaderBlock) public view returns (uint256) {

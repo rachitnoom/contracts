@@ -132,10 +132,10 @@ contract ExitManager is Storage, RootChainable {
   }
 
   // map child token to root token
-  function _mapToken(address _rootToken, address _childToken, bool _isERC721) internal {
-    // create exit queue
-    exitsQueues[_rootToken] = address(new PriorityQueue());
-  }
+  // function _mapToken(address _rootToken, address _childToken, bool _isERC721) internal {
+  //   // create exit queue
+  //   exitsQueues[_rootToken] = address(new PriorityQueue());
+  // }
 
   // delete exit
   function _deleteExit(uint256 exitId) internal {

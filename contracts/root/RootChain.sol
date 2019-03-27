@@ -153,8 +153,9 @@ contract RootChain is Storage, Ownable, IRootChain, IERC721Receiver {
     _currentHeaderBlock = _currentHeaderBlock.add(CHILD_BLOCK_INTERVAL);
 
     // finalize commit
-    depositManager.finalizeCommit(_currentHeaderBlock);
-    withdrawManager.finalizeCommit(_currentHeaderBlock);
+    // depositManager.finalizeCommit(_currentHeaderBlock);
+    depositCount = 1;
+    // withdrawManager.finalizeCommit(_currentHeaderBlock);
     stakeManager.finalizeCommit();
 
     // TODO add rewards
@@ -182,10 +183,10 @@ contract RootChain is Storage, Ownable, IRootChain, IERC721Receiver {
   }
 
   // map child token to root token
-  function mapToken(address _rootToken, address _childToken, bool _isERC721) public onlyOwner {
-    depositManager.mapToken(_rootToken, _childToken, _isERC721);
-    withdrawManager.mapToken(_rootToken, _childToken, _isERC721);
-  }
+  // function mapToken(address _rootToken, address _childToken, bool _isERC721) public onlyOwner {
+  //   depositManager.mapToken(_rootToken, _childToken, _isERC721);
+  //   // withdrawManager.mapToken(_rootToken, _childToken, _isERC721);
+  // }
 
   // change child chain contract
   function setChildContract(address newChildChain) public onlyOwner {
@@ -252,16 +253,16 @@ contract RootChain is Storage, Ownable, IRootChain, IERC721Receiver {
   }
 
   // set deposit manager
-  function setDepositManager(address _depositManager) public onlyOwner {
-    require(_depositManager != address(0));
-    depositManager = DepositManager(_depositManager);
-  }
+  // function setDepositManager(address _depositManager) public onlyOwner {
+  //   require(_depositManager != address(0));
+  //   depositManager = DepositManager(_depositManager);
+  // }
 
-  // set withdraw manager
-  function setWithdrawManager(address _withdrawManager) public onlyOwner {
-    require(_withdrawManager != address(0));
-    withdrawManager = WithdrawManager(_withdrawManager);
-  }
+  // // set withdraw manager
+  // function setWithdrawManager(address _withdrawManager) public onlyOwner {
+  //   require(_withdrawManager != address(0));
+  //   withdrawManager = WithdrawManager(_withdrawManager);
+  // }
 
   // deposit ethers
   function depositEthers() public payable {
@@ -344,7 +345,7 @@ contract RootChain is Storage, Ownable, IRootChain, IERC721Receiver {
   }
 
   // finalize commit
-  function finalizeCommit(uint256) public {}
+  // function finalizeCommit(uint256) public {}
 
   // slash stakers if fraud is detected
   function slash() public isProofValidator(msg.sender) {

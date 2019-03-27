@@ -56,12 +56,12 @@ contract WithdrawManager is IManager, ExitManager {
   }
 
   // map child token to root token
-  function mapToken(address _rootToken, address _childToken, bool _isERC721) public onlyRootChain {
-    _mapToken(_rootToken, _childToken, _isERC721);
-  }
+  // function mapToken(address _rootToken, address _childToken, bool _isERC721) public onlyRootChain {
+  //   _mapToken(_rootToken, _childToken, _isERC721);
+  // }
 
   // finalize commit
-  function finalizeCommit(uint256 _currentHeaderBlock) public onlyRootChain {}
+  // function finalizeCommit(uint256 _currentHeaderBlock) public onlyRootChain {}
 
   // delete exit
   function deleteExit(uint256 exitId) public onlyRootChain {
